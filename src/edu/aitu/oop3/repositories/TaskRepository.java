@@ -102,7 +102,7 @@ public class TaskRepository implements ITaskRepository {
         }
     }
 
-    // ВОТ ЭТОГО МЕТОДА НЕ ХВАТАЛО:
+
     @Override
     public boolean updateTask(Task task) {
         String sql = "UPDATE tasks SET title = ?, description = ?, deadline = ?, status = ? WHERE id = ?";
