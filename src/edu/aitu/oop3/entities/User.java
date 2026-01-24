@@ -29,7 +29,7 @@ public class User {
 
     @Override
     public String toString() {
-        int level = (xp / 1000) + 1;
+        int level = (xp / 300) + 1;
         return "Student: " + username + " | Level: " + level + " | XP: " + xp;
     }
 }
