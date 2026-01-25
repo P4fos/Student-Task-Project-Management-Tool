@@ -101,7 +101,7 @@ public class TaskRepository implements ITaskRepository {
                 throw new TaskNotFoundException("Task with ID " + id + " not found.");
             }
             return true;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
