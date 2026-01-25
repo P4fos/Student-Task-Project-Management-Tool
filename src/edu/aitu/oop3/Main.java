@@ -20,14 +20,42 @@ public class Main {
         UserRepository userRepo = new UserRepository(db);
         Scanner scanner = new Scanner(System.in);
 
+        User currentUser = null;
+
+        System.out.println("Welcome to Student Task Manager!");
+
+
+        while (currentUser == null) {
+            System.out.print("Enter your email to login: ");
+            String email = scanner.nextLine().trim();
+
+            User existingUser = userRepo.getUserByEmail(email);
+
+            if (existingUser != null) {
+                currentUser = existingUser;
+                System.out.println("Welcome back, " + currentUser.getUsername() + "!");
+            } else {
+                System.out.println("User not found. Let's register you!");
+                System.out.print("Enter your Name: ");
+                String name = scanner.nextLine();
+
+                if (userRepo.createUser(name, email)) {
+                    System.out.println("Registration successful! Logging in...");
+                    currentUser = userRepo.getUserByEmail(email);
+                } else {
+                    System.out.println("Error creating user. Try again.");
+                }
+            }
+        }
+
         while (true) {
-            System.out.println("\n--- Student Task Manager ---");
+            System.out.println("\n--- Menu for " + currentUser.getUsername() + " (Level " + (currentUser.getXp()/300 + 1) + ") ---");
             System.out.println("1. Add Task ");
             System.out.println("2. List All Tasks");
             System.out.println("3. Find Task by ID");
             System.out.println("4. Delete Task");
-            System.out.println("5. Mark Task DONE");
-            System.out.println("6. Show My Profile (Level & XP)");
+            System.out.println("5. Mark Task DONE ");
+            System.out.println("6. Show My Profile");
             System.out.println("7. Exit");
             System.out.print("Enter choice: ");
 
@@ -81,7 +109,11 @@ public class Main {
                                 if (taskRepo.updateTask(task)) {
                                     System.out.println("Quest Complete!");
 
-                                    userRepo.addXp(1, 50);
+
+                                    userRepo.addXp(currentUser.getId(), 50);
+
+
+                                    currentUser = userRepo.getUserById(currentUser.getId());
                                 }
                             } else {
                                 System.out.println("You already finished this task!");
@@ -92,9 +124,9 @@ public class Main {
 
                     } else if (choice == 6) {
 
-                        User u = userRepo.getUserById(1);
+                        currentUser = userRepo.getUserById(currentUser.getId());
                         System.out.println("--- Your Profile ---");
-                        System.out.println(u);
+                        System.out.println(currentUser);
                         System.out.println("--------------------");
 
                     } else if (choice == 7) {
