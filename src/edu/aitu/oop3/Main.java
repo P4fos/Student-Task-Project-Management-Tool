@@ -48,10 +48,12 @@ public class Main {
             }
         }
 
+
         while (true) {
+
             System.out.println("\n--- Menu for " + currentUser.getUsername() + " (Level " + (currentUser.getXp()/300 + 1) + ") ---");
             System.out.println("1. Add Task ");
-            System.out.println("2. List All Tasks");
+            System.out.println("2. List My Tasks");
             System.out.println("3. Find Task by ID");
             System.out.println("4. Delete Task");
             System.out.println("5. Mark Task DONE ");
@@ -70,31 +72,46 @@ public class Main {
                         System.out.print("Enter Description: ");
                         String desc = scanner.nextLine();
 
-                        Task t = new Task(title, desc, new Timestamp(System.currentTimeMillis() + 90000000), 1);
+
+                        Task t = new Task(title, desc, new Timestamp(System.currentTimeMillis() + 90000000), 1, currentUser.getId());
+
                         if(taskRepo.createTask(t)) {
                             System.out.println("New quest added!");
                         }
 
                     } else if (choice == 2) {
-                        List<Task> tasks = taskRepo.getAllTasks();
-                        for (Task t : tasks) {
-                            System.out.println(t);
+
+                        List<Task> tasks = taskRepo.getTasksByUserId(currentUser.getId());
+
+                        if (tasks.isEmpty()) {
+                            System.out.println("No quests yet. Add one!");
+                        } else {
+                            for (Task t : tasks) {
+                                System.out.println(t);
+                            }
                         }
 
                     } else if (choice == 3) {
                         System.out.print("Enter Task ID: ");
                         int id = scanner.nextInt();
                         Task t = taskRepo.getTaskById(id);
-                        System.out.println(t != null ? t : "Task not found.");
+
+                        if (t != null && t.getUserId() == currentUser.getId()) {
+                            System.out.println(t);
+                        } else {
+                            System.out.println("Task not found or access denied.");
+                        }
 
                     } else if (choice == 4) {
                         System.out.print("Enter Task ID to delete: ");
                         int id = scanner.nextInt();
-                        try {
+                        Task t = taskRepo.getTaskById(id);
+
+                        if (t != null && t.getUserId() == currentUser.getId()) {
                             taskRepo.deleteTask(id);
                             System.out.println("Task deleted.");
-                        } catch (TaskNotFoundException e) {
-                            System.out.println("Error: " + e.getMessage());
+                        } else {
+                            System.out.println("Error: Task not found or you don't have permission.");
                         }
 
                     } else if (choice == 5) {
@@ -103,27 +120,23 @@ public class Main {
                         scanner.nextLine();
 
                         Task task = taskRepo.getTaskById(id);
-                        if (task != null) {
+
+                        if (task != null && task.getUserId() == currentUser.getId()) {
                             if (!task.getStatus().equals("DONE")) {
                                 task.setStatus("DONE");
                                 if (taskRepo.updateTask(task)) {
                                     System.out.println("Quest Complete!");
-
-
                                     userRepo.addXp(currentUser.getId(), 50);
-
-
                                     currentUser = userRepo.getUserById(currentUser.getId());
                                 }
                             } else {
                                 System.out.println("You already finished this task!");
                             }
                         } else {
-                            System.out.println("Task not found.");
+                            System.out.println("Task not found or access denied.");
                         }
 
                     } else if (choice == 6) {
-
                         currentUser = userRepo.getUserById(currentUser.getId());
                         System.out.println("--- Your Profile ---");
                         System.out.println(currentUser);
