@@ -17,7 +17,7 @@ public class TaskRepository implements ITaskRepository {
 
     @Override
     public boolean createTask(Task task) {
-        String sql = "INSERT INTO tasks (title, description, deadline, project_id, status) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO tasks (title, description, deadline, project_id, user_id, status) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -25,7 +25,8 @@ public class TaskRepository implements ITaskRepository {
             stmt.setString(2, task.getDescription());
             stmt.setTimestamp(3, task.getDeadline());
             stmt.setInt(4, task.getProjectId());
-            stmt.setString(5, "PENDING");
+            stmt.setInt(5, task.getUserId());
+            stmt.setString(6, "PENDING");
 
             stmt.executeUpdate();
             return true;
@@ -36,12 +37,14 @@ public class TaskRepository implements ITaskRepository {
     }
 
     @Override
-    public List<Task> getAllTasks() {
+    public List<Task> getTasksByUserId(int userId) {
         List<Task> tasks = new ArrayList<>();
-        String sql = "SELECT * FROM tasks";
+        String sql = "SELECT * FROM tasks WHERE user_id = ?";
         try (Connection conn = db.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 Task t = new Task();
@@ -51,6 +54,7 @@ public class TaskRepository implements ITaskRepository {
                 t.setDeadline(rs.getTimestamp("deadline"));
                 t.setStatus(rs.getString("status"));
                 t.setProjectId(rs.getInt("project_id"));
+                t.setUserId(rs.getInt("user_id"));
                 tasks.add(t);
             }
         } catch (Exception e) {
@@ -67,6 +71,7 @@ public class TaskRepository implements ITaskRepository {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
                 Task t = new Task();
                 t.setId(rs.getInt("id"));
@@ -75,6 +80,7 @@ public class TaskRepository implements ITaskRepository {
                 t.setDeadline(rs.getTimestamp("deadline"));
                 t.setStatus(rs.getString("status"));
                 t.setProjectId(rs.getInt("project_id"));
+                t.setUserId(rs.getInt("user_id"));
                 return t;
             }
         } catch (Exception e) {
@@ -91,32 +97,26 @@ public class TaskRepository implements ITaskRepository {
 
             stmt.setInt(1, id);
             int rowsAffected = stmt.executeUpdate();
-
             if (rowsAffected == 0) {
-                throw new TaskNotFoundException("Could not delete: Task with ID " + id + " does not exist.");
+                throw new TaskNotFoundException("Task with ID " + id + " not found.");
             }
             return true;
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-
     @Override
     public boolean updateTask(Task task) {
-        String sql = "UPDATE tasks SET title = ?, description = ?, deadline = ?, status = ? WHERE id = ?";
+        String sql = "UPDATE tasks SET status = ? WHERE id = ?";
         try (Connection conn = db.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, task.getTitle());
-            stmt.setString(2, task.getDescription());
-            stmt.setTimestamp(3, task.getDeadline());
-            stmt.setString(4, task.getStatus());
-            stmt.setInt(5, task.getId());
-
-            int rows = stmt.executeUpdate();
-            return rows > 0;
+            stmt.setString(1, task.getStatus());
+            stmt.setInt(2, task.getId());
+            stmt.executeUpdate();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

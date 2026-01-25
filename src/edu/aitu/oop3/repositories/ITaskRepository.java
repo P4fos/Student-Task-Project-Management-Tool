@@ -6,10 +6,11 @@ import java.util.List;
 
 public interface ITaskRepository {
     boolean createTask(Task task);
+
+
+    List<Task> getTasksByUserId(int userId);
+
     Task getTaskById(int id);
-    List<Task> getAllTasks();
     boolean deleteTask(int id) throws TaskNotFoundException;
-
-
     boolean updateTask(Task task);
 }
