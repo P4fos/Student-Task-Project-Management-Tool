@@ -22,7 +22,7 @@ public class DatabaseConnection implements IDB {
             user = props.getProperty("db.user");
             pass = props.getProperty("db.password");
         } catch (IOException e) {
-            System.err.println("❌ ERROR: config.properties file not found in project root!");
+            System.err.println(" ERROR: config.properties file not found in project root!");
             e.printStackTrace();
             return null;
         }
@@ -31,7 +31,7 @@ public class DatabaseConnection implements IDB {
             Class.forName("org.postgresql.Driver");
             return DriverManager.getConnection(connectionUrl, user, pass);
         } catch (Exception e) {
-            System.err.println("❌ CONNECTION ERROR: " + e.getMessage());
+            System.err.println(" CONNECTION ERROR: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
