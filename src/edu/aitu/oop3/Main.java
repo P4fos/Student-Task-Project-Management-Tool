@@ -3,6 +3,7 @@ package edu.aitu.oop3;
 import edu.aitu.oop3.data.IDB;
 import edu.aitu.oop3.data.DatabaseConnection;
 import edu.aitu.oop3.entities.Task;
+import edu.aitu.oop3.entities.TaskFactory;
 import edu.aitu.oop3.entities.User;
 import edu.aitu.oop3.exceptions.UserAlreadyExistsException;
 import edu.aitu.oop3.exceptions.ValidationException;
@@ -44,26 +45,25 @@ public class Main {
                     User newUser = new User(0, name, email, 0);
                     userRepo.createUser(newUser);
 
-                    System.out.println("✅ Registration successful! Logging in...");
+                    System.out.println("Registration successful! Logging in...");
                     currentUser = userRepo.getUserByEmail(email);
                 } catch (UserAlreadyExistsException e) {
-                    System.out.println("⚠️ REGISTRATION ERROR: " + e.getMessage());
+                    System.out.println("REGISTRATION ERROR: " + e.getMessage());
                 } catch (Exception e) {
                     System.out.println("Error: " + e.getMessage());
                 }
             }
         }
 
-
         while (true) {
-            System.out.println("\n--- Menu for " + currentUser.getUsername() + " (Level " + (currentUser.getXp()/300 + 1) + ") ---");
-            System.out.println("1. Add Task (Builder Pattern)");
+            System.out.println("\n--- Menu for " + currentUser.getUsername() + " (Level " + (currentUser.getXp() / 300 + 1) + ") ---");
+            System.out.println("1. Add Task");
             System.out.println("2. List My Tasks");
             System.out.println("3. Find Task by ID");
             System.out.println("4. Delete Task");
             System.out.println("5. Mark Task DONE");
             System.out.println("6. Show My Profile");
-            System.out.println("7. Show ONLY Completed Tasks (Stream API) [NEW!]");
+            System.out.println("7. Show ONLY Completed Tasks");
             System.out.println("0. Exit");
             System.out.print("Enter choice: ");
 
@@ -78,17 +78,21 @@ public class Main {
                         System.out.print("Enter Description: ");
                         String desc = scanner.nextLine();
 
-                        Task t = new Task.Builder()
-                                .setTitle(title)
-                                .setDescription(desc)
-                                .setUserId(currentUser.getId())
-                                .build();
+                        System.out.print("Is this task URGENT? (yes/no): ");
+                        String type = scanner.nextLine().trim();
+
+                        Task t;
+                        if (type.equalsIgnoreCase("yes")) {
+                            t = TaskFactory.createUrgentTask(currentUser.getId(), title, desc);
+                        } else {
+                            t = TaskFactory.createSimpleTask(currentUser.getId(), title, desc);
+                        }
 
                         try {
                             taskRepo.createTask(t);
-                            System.out.println("✅ New quest added!");
+                            System.out.println("New quest added!");
                         } catch (ValidationException e) {
-                            System.out.println("⚠️ VALIDATION ERROR: " + e.getMessage());
+                            System.out.println("VALIDATION ERROR: " + e.getMessage());
                         }
 
                     } else if (choice == 2) {
@@ -128,17 +132,16 @@ public class Main {
                         Task task = taskRepo.getById(id);
 
                         if (task != null && task.getUserId() == currentUser.getId()) {
-                            if (!task.getStatus().equals("DONE")) {
+                            if (!"DONE".equals(task.getStatus())) {
                                 task.setStatus("DONE");
-
-                                System.out.println("Quest Complete! (Logic pending update implementation)");
+                                System.out.println("Quest Complete! +50 XP");
                                 userRepo.addXp(currentUser.getId(), 50);
                                 currentUser = userRepo.getUserById(currentUser.getId());
                             } else {
                                 System.out.println("You already finished this task!");
                             }
                         } else {
-                            System.out.println("Access denied.");
+                            System.out.println("Access denied or task not found.");
                         }
 
                     } else if (choice == 6) {
@@ -147,7 +150,7 @@ public class Main {
                         System.out.println(currentUser);
 
                     } else if (choice == 7) {
-                        System.out.println("--- 🚀 Completed Tasks (Filtered by Stream) ---");
+                        System.out.println("--- Completed Tasks ---");
                         List<Task> myTasks = taskRepo.getTasksByUserId(currentUser.getId());
 
                         myTasks.stream()
@@ -157,14 +160,17 @@ public class Main {
                     } else if (choice == 0) {
                         System.out.println("Goodbye!");
                         break;
+                    } else {
+                        System.out.println("Invalid option.");
                     }
+
                 } catch (Exception e) {
                     System.out.println("System Error: " + e.getMessage());
                     e.printStackTrace();
                 }
             } else {
                 scanner.next();
-                System.out.println("Please enter a number.");
+                System.out.println("Please enter a valid number.");
             }
         }
     }
