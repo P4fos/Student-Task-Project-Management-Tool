@@ -1,15 +1,15 @@
 package edu.aitu.oop3;
 
-import edu.aitu.oop3.data.IDB;
-import edu.aitu.oop3.data.DatabaseConnection;
-import edu.aitu.oop3.entities.Task;
-import edu.aitu.oop3.entities.TaskFactory;
-import edu.aitu.oop3.entities.User;
+import edu.aitu.oop3.components.shared.IDB;
+import edu.aitu.oop3.components.shared.DatabaseConnection;
+import edu.aitu.oop3.TaskTrackingComponent.Task;
+import edu.aitu.oop3.TaskTrackingComponent.TaskFactory;
+import edu.aitu.oop3.ProjectManagementComponent.User;
 import edu.aitu.oop3.exceptions.UserAlreadyExistsException;
 import edu.aitu.oop3.exceptions.ValidationException;
-import edu.aitu.oop3.repositories.interfaces.ITaskRepository;
-import edu.aitu.oop3.repositories.TaskRepository;
-import edu.aitu.oop3.repositories.UserRepository;
+import edu.aitu.oop3.TaskTrackingComponent.ITaskRepository;
+import edu.aitu.oop3.TaskTrackingComponent.TaskRepository;
+import edu.aitu.oop3.ProjectManagementComponent.UserRepository;
 
 import java.util.List;
 import java.util.Scanner;

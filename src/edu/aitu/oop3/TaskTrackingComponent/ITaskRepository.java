@@ -1,7 +1,7 @@
-package edu.aitu.oop3.repositories.interfaces;
+package edu.aitu.oop3.TaskTrackingComponent;
 
-import edu.aitu.oop3.entities.Task;
 import edu.aitu.oop3.exceptions.ValidationException;
+import edu.aitu.oop3.components.shared.IGenericRepository;
 
 import java.util.List;
 

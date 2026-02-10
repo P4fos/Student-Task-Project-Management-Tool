@@ -1,4 +1,4 @@
-package edu.aitu.oop3.entities;
+package edu.aitu.oop3.TaskTrackingComponent;
 
 public class TaskFactory {
     public static Task createSimpleTask(int userId, String title, String description) {

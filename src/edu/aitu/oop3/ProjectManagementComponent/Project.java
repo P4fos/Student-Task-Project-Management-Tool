@@ -1,4 +1,4 @@
-package edu.aitu.oop3.entities;
+package edu.aitu.oop3.ProjectManagementComponent;
 
 public class Project {
     private int id;

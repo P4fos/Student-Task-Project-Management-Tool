@@ -1,7 +1,6 @@
-package edu.aitu.oop3.repositories;
+package edu.aitu.oop3.ProjectManagementComponent;
 
-import edu.aitu.oop3.data.IDB;
-import edu.aitu.oop3.entities.User;
+import edu.aitu.oop3.components.shared.IDB;
 import edu.aitu.oop3.exceptions.UserAlreadyExistsException;
 import java.sql.*;
 

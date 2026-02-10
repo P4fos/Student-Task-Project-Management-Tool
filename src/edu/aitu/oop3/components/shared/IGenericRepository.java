@@ -1,4 +1,4 @@
-package edu.aitu.oop3.repositories.interfaces;
+package edu.aitu.oop3.components.shared;
 import java.util.List;
 
 public interface IGenericRepository<T> {

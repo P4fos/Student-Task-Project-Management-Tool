@@ -1,9 +1,8 @@
-package edu.aitu.oop3.repositories;
+package edu.aitu.oop3.TaskTrackingComponent;
 
-import edu.aitu.oop3.data.IDB;
-import edu.aitu.oop3.entities.Task;
+import edu.aitu.oop3.components.shared.IDB;
 import edu.aitu.oop3.exceptions.ValidationException;
-import edu.aitu.oop3.repositories.interfaces.ITaskRepository;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package edu.aitu.oop3.data;
+package edu.aitu.oop3.components.shared;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
