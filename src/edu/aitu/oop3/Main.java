@@ -10,6 +10,8 @@ import edu.aitu.oop3.exceptions.ValidationException;
 import edu.aitu.oop3.TaskTrackingComponent.ITaskRepository;
 import edu.aitu.oop3.TaskTrackingComponent.TaskRepository;
 import edu.aitu.oop3.ProjectManagementComponent.UserRepository;
+import edu.aitu.oop3.services.EmailNotificationService;
+import edu.aitu.oop3.services.INotificationService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -20,6 +22,9 @@ public class Main {
 
         ITaskRepository taskRepo = new TaskRepository(db);
         UserRepository userRepo = new UserRepository(db);
+
+        INotificationService notifier = new EmailNotificationService();
+
         Scanner scanner = new Scanner(System.in);
 
         User currentUser = null;
@@ -91,6 +96,10 @@ public class Main {
                         try {
                             taskRepo.createTask(t);
                             System.out.println("New quest added!");
+
+                            // 2. Отправляем уведомление
+                            notifier.sendNotification("New Task Created: " + title); // <--- NEW !!!
+
                         } catch (ValidationException e) {
                             System.out.println("VALIDATION ERROR: " + e.getMessage());
                         }
@@ -137,6 +146,9 @@ public class Main {
                                 System.out.println("Quest Complete! +50 XP");
                                 userRepo.addXp(currentUser.getId(), 50);
                                 currentUser = userRepo.getUserById(currentUser.getId());
+
+                                notifier.sendNotification("Task Completed! You gained XP.");
+
                             } else {
                                 System.out.println("You already finished this task!");
                             }
